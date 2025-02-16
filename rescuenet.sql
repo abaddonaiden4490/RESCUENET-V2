@@ -1,11 +1,15 @@
-DROP DATABASE IF EXISTS rescuenet;
-CREATE DATABASE rescuenet;
-use rescuenet;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Feb 16, 2025 at 08:40 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -101,21 +105,18 @@ CREATE TABLE `incidents` (
   `location` text NOT NULL,
   `reported_by` int(11) DEFAULT NULL,
   `reported_time` datetime DEFAULT current_timestamp(),
-  `status` enum('Pending','In Progress','Resolved') DEFAULT 'Pending'
+  `status` enum('Pending','In Progress','Resolved') DEFAULT 'Pending',
+  `attachments` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `incident_logs`
+-- Dumping data for table `incidents`
 --
 
-CREATE TABLE `incident_logs` (
-  `log_id` int(11) NOT NULL,
-  `incident_id` int(11) DEFAULT NULL,
-  `log_time` datetime DEFAULT current_timestamp(),
-  `log_entry` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `incidents` (`incident_id`, `incident_type`, `location`, `reported_by`, `reported_time`, `status`, `attachments`) VALUES
+(10, 'Sunog Sa Fire', 'Biringan City', 4, '2025-02-16 15:13:33', 'Pending', '../uploads/1739690013_waway poster.jpg'),
+(11, 'Sunog Sa Fire', 'Miyamasuzaka', 2, '2025-02-16 15:16:34', 'Pending', '../uploads/1739690194_Warhol.jpg'),
+(12, 'Sunog Sa Fire', 'Kamiyama', 2, '2025-02-16 15:17:17', 'Pending', '../uploads/1739690237_GIT HELP.docx');
 
 -- --------------------------------------------------------
 
@@ -301,13 +302,6 @@ ALTER TABLE `incidents`
   ADD KEY `reported_by` (`reported_by`);
 
 --
--- Indexes for table `incident_logs`
---
-ALTER TABLE `incident_logs`
-  ADD PRIMARY KEY (`log_id`),
-  ADD KEY `incident_id` (`incident_id`);
-
---
 -- Indexes for table `members`
 --
 ALTER TABLE `members`
@@ -380,19 +374,13 @@ ALTER TABLE `dispatch_records`
 -- AUTO_INCREMENT for table `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `incident_logs`
---
-ALTER TABLE `incident_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `ranks`
@@ -445,12 +433,6 @@ ALTER TABLE `dispatch_records`
 --
 ALTER TABLE `incidents`
   ADD CONSTRAINT `incidents_ibfk_1` FOREIGN KEY (`reported_by`) REFERENCES `members` (`member_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `incident_logs`
---
-ALTER TABLE `incident_logs`
-  ADD CONSTRAINT `incident_logs_ibfk_1` FOREIGN KEY (`incident_id`) REFERENCES `incidents` (`incident_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `members`
