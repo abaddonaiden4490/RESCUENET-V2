@@ -2,10 +2,13 @@
 require '../includes/config.php';
 include '../includes/header.php';
 
-// Fetch incidents with attachments from the incidents table
-$sql = "SELECT incident_id, incident_type, location, reported_by, reported_time, status, attachments 
-        FROM incidents
-        ORDER BY reported_time DESC";
+// Fetch incidents with attachments and member details
+$sql = "SELECT i.incident_id, i.incident_type, i.location, 
+               CONCAT(m.first_name, ' ', m.last_name) AS reported_by, 
+               i.reported_time, i.status, i.attachments 
+        FROM incidents i
+        LEFT JOIN members m ON i.reported_by = m.member_id
+        ORDER BY i.reported_time DESC";
 
 $result = $conn->query($sql);
 ?>
@@ -35,7 +38,7 @@ $result = $conn->query($sql);
                 </tr>
             </thead>
             <tbody>
-                <?php while($row = $result->fetch_assoc()): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($row['incident_id']); ?></td>
                     <td><?php echo htmlspecialchars($row['incident_type']); ?></td>
@@ -48,7 +51,15 @@ $result = $conn->query($sql);
                         if (!empty($row['attachments'])) {
                             $files = explode(',', $row['attachments']);
                             foreach ($files as $file) {
-                                echo '<a href="' . htmlspecialchars(trim($file)) . '" target="_blank">View File</a><br>';
+                                $file = htmlspecialchars(trim($file));
+                                $ext = pathinfo($file, PATHINFO_EXTENSION);
+                                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+
+                                if (in_array(strtolower($ext), $imageExtensions)) {
+                                    echo '<img src="' . $file . '" alt="Attachment" class="img-thumbnail" style="max-width: 100px; max-height: 100px; margin: 5px;">';
+                                } else {
+                                    echo '<a href="' . $file . '" target="_blank">View File</a><br>';
+                                }
                             }
                         } else {
                             echo 'No Attachments';
