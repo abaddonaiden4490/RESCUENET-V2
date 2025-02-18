@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2025 at 03:28 PM
+-- Generation Time: Feb 18, 2025 at 03:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -122,9 +122,8 @@ INSERT INTO `incidents` (`incident_id`, `incident_type`, `severity_id`, `locatio
 (13, 'Sunog Sa Fire', 4, 'Laravel City', 2, '2025-02-16 16:04:57', 1, NULL, '../uploads/1739693097_maam Baloloy.jpg'),
 (16, 'Mizuki', 5, 'Inazuma', 2, '2025-02-18 21:19:27', 2, NULL, 'uploads/1390833.jpg'),
 (21, 'Emu Otori', 5, 'Phoenix Wonderland', 2, '2025-02-18 22:15:30', 3, 'WONDERHOY', '../uploads/1739888130_tumblr_ff9c5625531e757e4097b54f291dbc81_47d907ba_540.jpg'),
-(22, 'MANO MANO 2', 5, 'PINTUAN NI MIZUKI', 2, '2025-02-18 22:26:44', 3, 'Binabangungot ako sa kakahintay na makalaban ka', '../uploads/1739888804_ubusan ng lakas.png'),
-(23, 'wala', 1, 'Inazuma', 2, '2025-02-18 22:27:21', 1, 'wala', NULL),
-(24, 'wala parin', 1, 'Herta Station', 2, '2025-02-18 22:27:49', 1, 'meron na', NULL);
+(26, 'MANO MANO 2', 4, 'PINTUAN NI MIZUKI', 2, '2025-02-18 22:43:48', 3, 'Tuluyan ka nang hindi magigising sa mga bangungot mo', '../uploads/1739889828_ubusan ng lakas.png'),
+(27, 'Takina Inoue', 1, 'Cafe LycoReco', 10, '2025-02-18 22:44:32', 3, 'Chisato', '../uploads/1739889872_Lycoris-Recoil.jpg');
 
 -- --------------------------------------------------------
 
@@ -438,7 +437,7 @@ ALTER TABLE `dispatch_records`
 -- AUTO_INCREMENT for table `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `members`
