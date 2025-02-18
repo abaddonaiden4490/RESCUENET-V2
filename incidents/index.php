@@ -8,9 +8,11 @@ include '../includes/header.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $incident_id = $_POST['incident_id'] ?? null;
     $incident_type = trim($_POST['incident_type']);
+    $severity_id = $_POST['severity_id'] ?? null;
     $location = trim($_POST['location']);
     $reported_by = !empty($_POST['reported_by']) ? intval($_POST['reported_by']) : null;
     $status = $_POST['status'] ?? 'Pending';
+    $actions_taken = trim($_POST['actions_taken']); // New field for actions taken
     $attachments = [];
 
     // Verify reported_by exists in members table
@@ -40,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (move_uploaded_file($tmp_name, $file_path)) {
                     $attachments[] = $file_path;
                 }
+            } else {
+                die("Error uploading file: " . $_FILES['attachments']['error'][$key]);
             }
         }
     }
@@ -64,14 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($incident_id) {
         // Update Incident
-        $sql = "UPDATE incidents SET incident_type=?, location=?, reported_by=?, status=?, attachments=? WHERE incident_id=?";
+        $sql = "UPDATE incidents SET incident_type=?, severity_id=?, location=?, reported_by=?, status=?, actions_taken=?, attachments=? WHERE incident_id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssissi", $incident_type, $location, $reported_by, $status, $attachments_string, $incident_id);
+        $stmt->bind_param("sissisis", $incident_type, $severity_id, $location, $reported_by, $status, $actions_taken, $attachments_string, $incident_id);
     } else {
         // Insert New Incident
-        $sql = "INSERT INTO incidents (incident_type, location, reported_by, status, attachments) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO incidents (incident_type, severity_id, location, reported_by, status, actions_taken, attachments) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssiss", $incident_type, $location, $reported_by, $status, $attachments_string);
+        $stmt->bind_param("sississ", $incident_type, $severity_id, $location, $reported_by, $status, $actions_taken, $attachments_string);
     }
 
     if ($stmt->execute()) {
@@ -98,11 +102,17 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Fetch incidents with member name
-$sql = "SELECT incidents.*, COALESCE(CONCAT(members.first_name, ' ', members.last_name), 'Unknown') AS reporter_name 
-        FROM incidents 
-        LEFT JOIN members ON incidents.reported_by = members.member_id 
-        ORDER BY incidents.reported_time DESC";
+// Fetch incidents with severity name, member name, status name, and actions taken
+$sql = "SELECT i.*, 
+               COALESCE(CONCAT(m.first_name, ' ', m.last_name), 'Unknown') AS reporter_name, 
+               s.level AS severity,
+               st.status_name 
+        FROM incidents i
+        LEFT JOIN members m ON i.reported_by = m.member_id
+        LEFT JOIN severity s ON i.severity_id = s.id
+        LEFT JOIN status st ON i.status_id = st.status_id
+        ORDER BY i.reported_time DESC";
+
 $result = $conn->query($sql);
 ?>
 
@@ -124,23 +134,27 @@ $result = $conn->query($sql);
                 <tr>
                     <th>ID</th>
                     <th>Type</th>
+                    <th>Severity</th>
                     <th>Location</th>
                     <th>Reported By</th>
                     <th>Time</th>
                     <th>Status</th>
+                    <th>Actions Taken</th> <!-- New column for Actions Taken -->
                     <th>Attachments</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php while($row = $result->fetch_assoc()): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($row['incident_id']); ?></td>
                     <td><?php echo htmlspecialchars($row['incident_type']); ?></td>
+                    <td><?php echo htmlspecialchars($row['severity'] ?? 'Not Specified'); ?></td>
                     <td><?php echo htmlspecialchars($row['location']); ?></td>
                     <td><?php echo htmlspecialchars($row['reporter_name']); ?></td>
                     <td><?php echo htmlspecialchars($row['reported_time']); ?></td>
-                    <td><?php echo htmlspecialchars($row['status']); ?></td>
+                    <td><?php echo htmlspecialchars($row['status_name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['actions_taken'] ?? 'No actions recorded.'); ?></td> <!-- Display Actions Taken -->
                     <td>
                         <?php 
                         if (!empty($row['attachments'])) {

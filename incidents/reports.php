@@ -2,12 +2,15 @@
 require '../includes/config.php';
 include '../includes/header.php';
 
-// Fetch incidents with attachments and member details
+// Fetch incidents with severity name, attachments, member details, status name, and actions_taken
 $sql = "SELECT i.incident_id, i.incident_type, i.location, 
                CONCAT(m.first_name, ' ', m.last_name) AS reported_by, 
-               i.reported_time, i.status, i.attachments 
+               i.reported_time, st.status_name, i.attachments, 
+               s.level AS severity, i.actions_taken
         FROM incidents i
         LEFT JOIN members m ON i.reported_by = m.member_id
+        LEFT JOIN severity s ON i.severity_id = s.id
+        LEFT JOIN status st ON i.status_id = st.status_id
         ORDER BY i.reported_time DESC";
 
 $result = $conn->query($sql);
@@ -30,10 +33,12 @@ $result = $conn->query($sql);
                 <tr>
                     <th>Incident ID</th>
                     <th>Incident Type</th>
+                    <th>Severity</th>
                     <th>Location</th>
                     <th>Reported By</th>
                     <th>Reported Time</th>
                     <th>Status</th>
+                    <th>Actions Taken</th> <!-- New Column -->
                     <th>Attachments</th>
                 </tr>
             </thead>
@@ -42,10 +47,12 @@ $result = $conn->query($sql);
                 <tr>
                     <td><?php echo htmlspecialchars($row['incident_id']); ?></td>
                     <td><?php echo htmlspecialchars($row['incident_type']); ?></td>
+                    <td><?php echo htmlspecialchars($row['severity'] ?? 'Not Specified'); ?></td>
                     <td><?php echo htmlspecialchars($row['location']); ?></td>
                     <td><?php echo htmlspecialchars($row['reported_by'] ?? 'Unknown'); ?></td>
                     <td><?php echo htmlspecialchars($row['reported_time']); ?></td>
-                    <td><?php echo htmlspecialchars($row['status']); ?></td>
+                    <td><?php echo htmlspecialchars($row['status_name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['actions_taken'] ?? 'No actions recorded'); ?></td> <!-- Display actions_taken -->
                     <td>
                         <?php 
                         if (!empty($row['attachments'])) {

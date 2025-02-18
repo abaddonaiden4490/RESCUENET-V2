@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 17, 2025 at 02:23 AM
+-- Generation Time: Feb 18, 2025 at 03:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -102,10 +102,12 @@ CREATE TABLE `dispatch_records` (
 CREATE TABLE `incidents` (
   `incident_id` int(11) NOT NULL,
   `incident_type` varchar(100) NOT NULL,
+  `severity_id` int(11) DEFAULT NULL,
   `location` text NOT NULL,
   `reported_by` int(11) DEFAULT NULL,
   `reported_time` datetime DEFAULT current_timestamp(),
-  `status` enum('Pending','In Progress','Resolved') DEFAULT 'Pending',
+  `status_id` int(11) DEFAULT NULL,
+  `actions_taken` varchar(255) DEFAULT NULL,
   `attachments` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -113,11 +115,16 @@ CREATE TABLE `incidents` (
 -- Dumping data for table `incidents`
 --
 
-INSERT INTO `incidents` (`incident_id`, `incident_type`, `location`, `reported_by`, `reported_time`, `status`, `attachments`) VALUES
-(10, 'Sunog Sa Fire', 'Biringan City', 4, '2025-02-16 15:13:33', 'Pending', '../uploads/1739690013_waway poster.jpg'),
-(11, 'Sunog Sa Fire', 'Miyamasuzaka', 2, '2025-02-16 15:16:34', 'Pending', '../uploads/1739690194_Warhol.jpg'),
-(12, 'Sunog Sa Fire', 'Kamiyama', 2, '2025-02-16 15:17:17', 'Pending', '../uploads/1739690237_GIT HELP.docx'),
-(13, 'Sunog Sa Fire', 'Laravel City', 2, '2025-02-16 16:04:57', 'Pending', '../uploads/1739693097_maam Baloloy.jpg');
+INSERT INTO `incidents` (`incident_id`, `incident_type`, `severity_id`, `location`, `reported_by`, `reported_time`, `status_id`, `actions_taken`, `attachments`) VALUES
+(10, 'Sunog Sa Fire', 1, 'Biringan City', 4, '2025-02-16 15:13:33', 1, NULL, '../uploads/1739690013_waway poster.jpg'),
+(11, 'Sunog Sa Fire', 2, 'Miyamasuzaka', 2, '2025-02-16 15:16:34', 1, NULL, '../uploads/1739690194_Warhol.jpg'),
+(12, 'Sunog Sa Fire', 3, 'Kamiyama', 2, '2025-02-16 15:17:17', 1, NULL, '../uploads/1739690237_GIT HELP.docx'),
+(13, 'Sunog Sa Fire', 4, 'Laravel City', 2, '2025-02-16 16:04:57', 1, NULL, '../uploads/1739693097_maam Baloloy.jpg'),
+(16, 'Mizuki', 5, 'Inazuma', 2, '2025-02-18 21:19:27', 2, NULL, 'uploads/1390833.jpg'),
+(21, 'Emu Otori', 5, 'Phoenix Wonderland', 2, '2025-02-18 22:15:30', 3, 'WONDERHOY', '../uploads/1739888130_tumblr_ff9c5625531e757e4097b54f291dbc81_47d907ba_540.jpg'),
+(22, 'MANO MANO 2', 5, 'PINTUAN NI MIZUKI', 2, '2025-02-18 22:26:44', 3, 'Binabangungot ako sa kakahintay na makalaban ka', '../uploads/1739888804_ubusan ng lakas.png'),
+(23, 'wala', 1, 'Inazuma', 2, '2025-02-18 22:27:21', 1, 'wala', NULL),
+(24, 'wala parin', 1, 'Herta Station', 2, '2025-02-18 22:27:49', 1, 'meron na', NULL);
 
 -- --------------------------------------------------------
 
@@ -205,6 +212,28 @@ INSERT INTO `roles` (`role_id`, `role_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `severity`
+--
+
+CREATE TABLE `severity` (
+  `id` int(11) NOT NULL,
+  `level` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `severity`
+--
+
+INSERT INTO `severity` (`id`, `level`) VALUES
+(1, 'low'),
+(2, 'moderate'),
+(3, 'high'),
+(4, 'very high'),
+(5, 'extreme');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `shifts`
 --
 
@@ -216,6 +245,26 @@ CREATE TABLE `shifts` (
   `assigned_by` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `status`
+--
+
+CREATE TABLE `status` (
+  `status_id` int(11) NOT NULL,
+  `status_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `status`
+--
+
+INSERT INTO `status` (`status_id`, `status_name`) VALUES
+(1, 'Pending'),
+(2, 'In progress'),
+(3, 'Resolved');
 
 -- --------------------------------------------------------
 
@@ -300,7 +349,9 @@ ALTER TABLE `dispatch_records`
 --
 ALTER TABLE `incidents`
   ADD PRIMARY KEY (`incident_id`),
-  ADD KEY `reported_by` (`reported_by`);
+  ADD KEY `reported_by` (`reported_by`),
+  ADD KEY `fk_severity` (`severity_id`),
+  ADD KEY `fk_status` (`status_id`);
 
 --
 -- Indexes for table `members`
@@ -327,12 +378,24 @@ ALTER TABLE `roles`
   ADD UNIQUE KEY `role_name` (`role_name`);
 
 --
+-- Indexes for table `severity`
+--
+ALTER TABLE `severity`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `shifts`
 --
 ALTER TABLE `shifts`
   ADD PRIMARY KEY (`shift_id`),
   ADD KEY `member_id` (`member_id`),
   ADD KEY `assigned_by` (`assigned_by`);
+
+--
+-- Indexes for table `status`
+--
+ALTER TABLE `status`
+  ADD PRIMARY KEY (`status_id`);
 
 --
 -- Indexes for table `trainings`
@@ -375,7 +438,7 @@ ALTER TABLE `dispatch_records`
 -- AUTO_INCREMENT for table `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `members`
@@ -433,6 +496,8 @@ ALTER TABLE `dispatch_records`
 -- Constraints for table `incidents`
 --
 ALTER TABLE `incidents`
+  ADD CONSTRAINT `fk_severity` FOREIGN KEY (`severity_id`) REFERENCES `severity` (`id`),
+  ADD CONSTRAINT `fk_status` FOREIGN KEY (`status_id`) REFERENCES `status` (`status_id`),
   ADD CONSTRAINT `incidents_ibfk_1` FOREIGN KEY (`reported_by`) REFERENCES `members` (`member_id`) ON DELETE SET NULL;
 
 --
