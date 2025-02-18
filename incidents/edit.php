@@ -10,7 +10,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $incident_id = intval($_GET['id']);
 
 // Fetch incident details
-$sql = "SELECT i.incident_id, i.incident_type, i.location, i.reported_by, i.status_id, i.attachments, i.severity_id, i.actions_taken, s.level as severity_level
+$sql = "SELECT i.incident_id, i.incident_type, i.location, i.reported_by, i.status_id, i.severity_id, i.actions_taken, s.level as severity_level
         FROM incidents i
         LEFT JOIN severity s ON i.severity_id = s.id
         WHERE i.incident_id = ?";
@@ -33,7 +33,7 @@ $members_result = $conn->query($members_sql);
 $severity_sql = "SELECT id, level FROM severity ORDER BY id ASC";
 $severity_result = $conn->query($severity_sql);
 
-// Fetch statuses for dropdown (corrected to use `status_id`)
+// Fetch statuses for dropdown
 $status_sql = "SELECT status_id, status_name FROM status ORDER BY status_id ASC";  // Use status_id
 $status_result = $conn->query($status_sql);
 ?>
@@ -51,7 +51,7 @@ $status_result = $conn->query($status_sql);
     <h1 class="mb-4">Edit Incident Report</h1>
     <a href="index.php" class="btn btn-secondary mb-3">Back to List</a>
     
-    <form action="update.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form action="update.php" method="POST" class="needs-validation" novalidate>
         <input type="hidden" name="incident_id" value="<?php echo $incident['incident_id']; ?>">
         
         <div class="mb-3">
@@ -103,23 +103,6 @@ $status_result = $conn->query($status_sql);
         <div class="mb-3">
             <label for="actions_taken" class="form-label">Actions Taken</label>
             <textarea class="form-control" id="actions_taken" name="actions_taken" rows="4" required><?php echo htmlspecialchars($incident['actions_taken']); ?></textarea>
-        </div>
-        
-        <div class="mb-3">
-            <label for="attachments" class="form-label">Attachments</label>
-            <input type="file" class="form-control" id="attachments" name="attachments[]" multiple>
-            <?php if (!empty($incident['attachments'])): ?>
-                <p>Current Attachments:</p>
-                <?php
-                $files = explode(',', $incident['attachments']);
-                $upload_dir = 'uploads/';  // Correct relative path for uploaded files
-                foreach ($files as $file): ?>
-                    <a href="<?php echo $upload_dir . htmlspecialchars(trim($file)); ?>" target="_blank">
-                        View File
-                    </a><br>
-                    <img src="<?php echo $upload_dir . htmlspecialchars(trim($file)); ?>" alt="Attachment" width="100" height="100" onerror="this.style.display='none';" /><br>
-                <?php endforeach; ?>
-            <?php endif; ?>
         </div>
         
         <button type="submit" class="btn btn-primary">Update</button>
