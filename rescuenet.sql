@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 16, 2025 at 08:40 AM
+-- Generation Time: Feb 17, 2025 at 02:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -116,7 +116,8 @@ CREATE TABLE `incidents` (
 INSERT INTO `incidents` (`incident_id`, `incident_type`, `location`, `reported_by`, `reported_time`, `status`, `attachments`) VALUES
 (10, 'Sunog Sa Fire', 'Biringan City', 4, '2025-02-16 15:13:33', 'Pending', '../uploads/1739690013_waway poster.jpg'),
 (11, 'Sunog Sa Fire', 'Miyamasuzaka', 2, '2025-02-16 15:16:34', 'Pending', '../uploads/1739690194_Warhol.jpg'),
-(12, 'Sunog Sa Fire', 'Kamiyama', 2, '2025-02-16 15:17:17', 'Pending', '../uploads/1739690237_GIT HELP.docx');
+(12, 'Sunog Sa Fire', 'Kamiyama', 2, '2025-02-16 15:17:17', 'Pending', '../uploads/1739690237_GIT HELP.docx'),
+(13, 'Sunog Sa Fire', 'Laravel City', 2, '2025-02-16 16:04:57', 'Pending', '../uploads/1739693097_maam Baloloy.jpg');
 
 -- --------------------------------------------------------
 
@@ -374,7 +375,7 @@ ALTER TABLE `dispatch_records`
 -- AUTO_INCREMENT for table `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `members`
